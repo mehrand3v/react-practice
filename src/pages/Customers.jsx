@@ -2,6 +2,7 @@
 import { useState } from "react";
 
 function Customers() {
+    
   const [customers] = useState([
     { id: 1, name: "Jane Cooper", email: "jane@example.com", status: "Active" },
     {
