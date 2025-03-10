@@ -1,12 +1,19 @@
-//src/router/routes.jsx
-
+// src/router/appRoutes.jsx
 import { Navigate } from "react-router-dom";
 import RootLayout from "@components/layout/RootLayout";
+import AuthLayout from "@components/layout/AuthLayout";
 import Customers from "@pages/Customers";
 import Sales from "@pages/Sales";
 import NotFound from "@pages/NotFound";
 import ErrorPage from "@pages/ErrorPage";
+import Profile from "@pages/Profile";
+import Login from "@pages/auth/Login";
+// import Register from "@pages/auth/Register";
+// import ForgotPassword from "@pages/auth/ForgotPassword";
+import PrivateRoute from "@components/auth/PrivateRoute";
+import Dashboard from "@pages/Dashboard"; // Import the new Dashboard component
 
+// Placeholder page for under-development features
 const PlaceholderPage = () => (
   <div className="p-6">
     <h1 className="text-2xl font-semibold text-gray-800">Coming Soon</h1>
@@ -19,26 +26,36 @@ const PlaceholderPage = () => (
 const routes = [
   {
     path: "/",
-    element: <RootLayout />,
-    errorElement: <ErrorPage />, // ✅ Handles crashes, API failures, etc. error handling at the root level
+    element: (
+      <PrivateRoute>
+        <RootLayout />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <Customers /> },
+      { index: true, element: <Customers /> }, // Default route for authenticated users
       { path: "sales", element: <Sales /> },
       { path: "products", element: <PlaceholderPage /> },
-      // { path: "/products/:id", element: <Product /> }, // for dynamic routing
       { path: "users", element: <PlaceholderPage /> },
       { path: "orders", element: <PlaceholderPage /> },
       { path: "analytics", element: <PlaceholderPage /> },
       { path: "settings", element: <PlaceholderPage /> },
       { path: "inventory", element: <PlaceholderPage /> },
       { path: "transactions", element: <PlaceholderPage /> },
-      { path: "dashboard", element: <Navigate to="/" replace /> }, // Redirect
-      { path: "*", element: <NotFound /> }, // ✅ Handles 404 errors
+      { path: "profile", element: <Profile /> }, // Profile page for authenticated users
+      { path: "dashboard", element: <Dashboard /> }, // Point to the new Dashboard component
+      { path: "*", element: <NotFound /> }, // Catch-all for 404
+    ],
+  },
+  {
+    path: "/auth", // Use a different base path for authentication routes
+    element: <AuthLayout />,
+    children: [
+      { path: "login", element: <Login /> },
+      // { path: "register", element: <Register /> },
+      // { path: "forgot-password", element: <ForgotPassword /> },
     ],
   },
 ];
-
-
-
 
 export default routes;
