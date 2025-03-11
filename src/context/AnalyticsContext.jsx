@@ -1,7 +1,7 @@
 // src/context/AnalyticsContext.jsx
 import { createContext, useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { logPageView } from "@/services/firebase/analytics";
+import { logPageView } from "@/services/analytics";
 
 const AnalyticsContext = createContext(null);
 

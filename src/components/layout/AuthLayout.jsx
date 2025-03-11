@@ -6,10 +6,7 @@ const AuthLayout = () => {
   return (
     <div className="relative min-h-screen bg-gray-100">
       {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: 'url("/path-to-your-image.jpg")' }}
-      ></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600"></div>
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-black opacity-40"></div>
