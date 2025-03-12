@@ -1,21 +1,39 @@
 // src/hooks/useGlobalLoading.js
-import { useLoading } from "@/context/LoadingContext";
+// import { useLoading } from "@/context/LoadingContext";
+
+// export const useGlobalLoading = () => {
+//   const { setIsLoading } = useLoading();
+
+//   const showLoading = () => setIsLoading(true);
+//   const hideLoading = () => setIsLoading(false);
+
+//   // Helper for wrapping async functions
+//   const withLoading = async (asyncFunction) => {
+//     showLoading();
+//     try {
+//       return await asyncFunction();
+//     } finally {
+//       hideLoading();
+//     }
+//   };
+
+//   return { showLoading, hideLoading, withLoading };
+// };
+
+// hooks/useGlobalLoading.js
+import { useCallback } from 'react';
+import { useLoading } from '../context/LoadingContext';
 
 export const useGlobalLoading = () => {
-  const { setIsLoading } = useLoading();
+  const { showLoading: show, hideLoading: hide } = useLoading();
 
-  const showLoading = () => setIsLoading(true);
-  const hideLoading = () => setIsLoading(false);
+  const showLoading = useCallback(() => {
+    show();
+  }, [show]);
 
-  // Helper for wrapping async functions
-  const withLoading = async (asyncFunction) => {
-    showLoading();
-    try {
-      return await asyncFunction();
-    } finally {
-      hideLoading();
-    }
-  };
+  const hideLoading = useCallback(() => {
+    hide();
+  }, [hide]);
 
-  return { showLoading, hideLoading, withLoading };
+  return { showLoading, hideLoading };
 };

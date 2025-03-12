@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
+import { useTheme } from "@/context/ThemeContext";
+
 import {
   BarChart2,
   ShoppingBag,
@@ -39,28 +41,7 @@ export default function SideNavbar() {
   const [isLoading, setIsLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Dark mode state
-  const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("darkMode") === "true" ||
-      (!localStorage.getItem("darkMode") &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches)
-  );
-
-  // Toggle dark mode
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-
-  // Update dark mode in localStorage and on the document element
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("darkMode", "true");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("darkMode", "false");
-    }
-  }, [darkMode]);
+const { darkMode, toggleDarkMode } = useTheme();
 
   // Set current path based on location
   const currentPath = location.pathname;

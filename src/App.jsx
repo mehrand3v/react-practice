@@ -5,18 +5,20 @@ import router from "@/router/appRouter";
 import { LoadingProvider } from "./context/LoadingContext";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 import { ThemeProvider } from "./context/ThemeContext";
-
+import ErrorBoundary from "./components/common/ErrorBoundary";
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <LoadingProvider>
-          <LoadingSpinner />
-          <RouterProvider router={router} />
-        </LoadingProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <LoadingProvider>
+            <LoadingSpinner />
+            <RouterProvider router={router} />
+          </LoadingProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

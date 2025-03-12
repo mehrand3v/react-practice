@@ -28,23 +28,53 @@ const LoadingFallback = () => (
 
 
 // Create a wrapper for lazy-loaded components
+// const LazyWrapper = ({ component: Component }) => {
+//  const { showLoading, hideLoading } = useGlobalLoading();
+//  const [isLoadingLocal, setIsLoadingLocal] = useState(true); // Local loading state
+
+//  // Sync local loading state with global loading state
+//  useEffect(() => {
+//    if (isLoadingLocal) {
+//      showLoading(); // Show global loading when local loading is true
+//    } else {
+//      hideLoading(); // Hide global loading when local loading is false
+//    }
+//  }, [isLoadingLocal, showLoading, hideLoading]);
+
+//  // Hide local loading when the component is mounted
+//  useEffect(() => {
+//    setIsLoadingLocal(false);
+//  }, []);
+
+//   return (
+//     <Suspense fallback={<LoadingFallback />}>
+//       <Component />
+//     </Suspense>
+//   );
+// };
+
+// Modify your LazyWrapper component in appRoutes.jsx
 const LazyWrapper = ({ component: Component }) => {
- const { showLoading, hideLoading } = useGlobalLoading();
- const [isLoadingLocal, setIsLoadingLocal] = useState(true); // Local loading state
+  const { showLoading, hideLoading } = useGlobalLoading();
 
- // Sync local loading state with global loading state
- useEffect(() => {
-   if (isLoadingLocal) {
-     showLoading(); // Show global loading when local loading is true
-   } else {
-     hideLoading(); // Hide global loading when local loading is false
-   }
- }, [isLoadingLocal, showLoading, hideLoading]);
+  useEffect(() => {
+    // Show loading when component is about to mount
+    showLoading();
 
- // Hide local loading when the component is mounted
- useEffect(() => {
-   setIsLoadingLocal(false);
- }, []);
+    // Hide loading immediately after component has mounted
+    return () => {
+      hideLoading();
+    };
+  }, []);
+
+  // Also hide loading when component has mounted
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      hideLoading();
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [hideLoading]);
 
   return (
     <Suspense fallback={<LoadingFallback />}>
@@ -52,8 +82,6 @@ const LazyWrapper = ({ component: Component }) => {
     </Suspense>
   );
 };
-
-
 
 // Placeholder page for under-development features
 const PlaceholderPage = () => (
