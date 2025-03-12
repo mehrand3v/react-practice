@@ -6,6 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./src/index.css">
     <title>Vite + React</title>
+    <!-- Add this script to handle dark mode on initial load (to prevent the initial page load flicker:)-->
+    <script>
+      // Check for saved theme preference or respect OS setting
+      if (
+        localStorage.getItem('darkMode') === 'true' ||
+        (!localStorage.getItem('darkMode') &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

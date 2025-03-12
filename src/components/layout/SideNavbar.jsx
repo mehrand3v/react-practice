@@ -10,6 +10,8 @@ import {
   Settings,
   Menu,
   X,
+  Moon,
+  Sun,
 } from "lucide-react";
 
 const SIDEBAR_ITEMS = [
@@ -36,6 +38,29 @@ export default function SideNavbar() {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Dark mode state
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("darkMode") === "true" ||
+      (!localStorage.getItem("darkMode") &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches)
+  );
+
+  // Toggle dark mode
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  // Update dark mode in localStorage and on the document element
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("darkMode", "true");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("darkMode", "false");
+    }
+  }, [darkMode]);
 
   // Set current path based on location
   const currentPath = location.pathname;
@@ -139,6 +164,20 @@ export default function SideNavbar() {
           </li>
         </ul>
       </nav>
+
+      {/* Dark mode toggle button */}
+      <div className="flex items-center justify-center p-4">
+        <button
+          onClick={toggleDarkMode}
+          className="p-2 rounded-full bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none"
+        >
+          {darkMode ? (
+            <Sun className="h-5 w-5" />
+          ) : (
+            <Moon className="h-5 w-5" />
+          )}
+        </button>
+      </div>
     </>
   );
 

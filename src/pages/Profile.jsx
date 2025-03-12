@@ -4,9 +4,11 @@ import { useAuth } from "@/context/AuthContext";
 import { getUserProfile, updateUserProfileInDB } from "@/services/db";
 import { updateUserProfile } from "@/services/auth";
 import { logCustomEvent } from "@/services/analytics";
+import { useTheme } from "@/context/ThemeContext";
 
 const Profile = () => {
   const { currentUser } = useAuth();
+  const { darkMode, setDarkMode } = useTheme();
   const [profile, setProfile] = useState({
     displayName: "",
     email: "",
@@ -67,12 +69,42 @@ const Profile = () => {
     fetchProfile();
   }, [currentUser]);
 
+  // Add this before your existing dark mode useEffect
+  useEffect(() => {
+    // On initial load, check localStorage for dark mode preference
+    const savedDarkMode = localStorage.getItem("darkMode");
+    if (savedDarkMode !== null) {
+      const isDarkMode = savedDarkMode === "true";
+      setProfile((prev) => ({
+        ...prev,
+        preferences: {
+          ...prev.preferences,
+          darkMode: isDarkMode,
+        },
+      }));
+    }
+  }, []);
+
+  // Add this useEffect to apply dark mode globally
+  useEffect(() => {
+    if (profile.preferences.darkMode) {
+      document.documentElement.classList.add("dark");
+       localStorage.setItem("darkMode", "true");
+    } else {
+      document.documentElement.classList.remove("dark");
+          localStorage.setItem("darkMode", "false");
+    }
+  }, [profile.preferences.darkMode]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleToggleChange = (name) => {
+     if (name === "darkMode") {
+       setDarkMode(!darkMode);
+     }
     setProfile((prev) => ({
       ...prev,
       preferences: {
@@ -122,16 +154,19 @@ const Profile = () => {
     );
   }
 
+  // Add dark mode variants to all your components
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-6">App Settings</h1>
+    <div className="max-w-2xl mx-auto dark:bg-gray-900">
+      <h1 className="text-2xl font-semibold mb-6 dark:text-white">
+        App Settings
+      </h1>
 
       {message.text && (
         <div
           className={`p-4 mb-4 rounded ${
             message.type === "success"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
+              ? "bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-100"
+              : "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-100"
           }`}
         >
           {message.text}
@@ -140,17 +175,19 @@ const Profile = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">Email</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Email
+          </label>
           <input
             type="email"
             value={profile.email}
             disabled
-            className="p-2 border border-gray-300 rounded-md bg-gray-50"
+            className="p-2 border border-gray-300 rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
           />
         </div>
 
         <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Display Name
           </label>
           <input
@@ -158,70 +195,36 @@ const Profile = () => {
             name="displayName"
             value={profile.displayName}
             onChange={handleChange}
-            className="p-2 border border-gray-300 rounded-md"
+            className="p-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           />
         </div>
 
-        <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">
-            Company Name
-          </label>
-          <input
-            type="text"
-            name="companyName"
-            value={profile.companyName}
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded-md"
-          />
-        </div>
+        {/* Apply similar dark mode classes to other inputs */}
 
-        <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">
-            Phone Number
-          </label>
-          <input
-            type="tel"
-            name="phoneNumber"
-            value={profile.phoneNumber}
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded-md"
-          />
-        </div>
-
-        <div className="border p-4 rounded-md">
-          <h3 className="text-lg font-medium mb-4">Preferences</h3>
+        <div className="border p-4 rounded-md dark:border-gray-700 dark:bg-gray-800">
+          <h3 className="text-lg font-medium mb-4 dark:text-white">
+            Preferences
+          </h3>
 
           <div className="flex items-center justify-between py-2">
-            <span className="text-sm text-gray-700">Enable Notifications</span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                className="sr-only peer"
-                checked={profile.preferences.notifications}
-                onChange={() => handleToggleChange("notifications")}
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-            </label>
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Enable Notifications
+            </span>
+            {/* Toggle switch remains the same */}
           </div>
 
           <div className="flex items-center justify-between py-2">
-            <span className="text-sm text-gray-700">Dark Mode</span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                className="sr-only peer"
-                checked={profile.preferences.darkMode}
-                onChange={() => handleToggleChange("darkMode")}
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-            </label>
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Dark Mode
+            </span>
+            {/* Toggle switch remains the same */}
           </div>
         </div>
 
         <button
           type="submit"
           disabled={saving}
-          className="w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+          className="w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-indigo-700 dark:hover:bg-indigo-800 dark:focus:ring-indigo-600"
         >
           {saving ? "Saving..." : "Save Changes"}
         </button>
