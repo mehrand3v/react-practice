@@ -2,10 +2,12 @@
 import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import SideNavbar from "./SideNavbar";
+import Header from '@/components/common/Header';
 
 function RootLayout() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
+      <Header />
       <SideNavbar />
 
       {/* Main content area with proper padding for mobile/desktop */}
